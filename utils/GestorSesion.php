@@ -12,6 +12,15 @@ class GestorSesion
     public static function startSession()
     {
         self::startSessionIfNotStarted();
+
+        if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 60)) {
+
+            self::destroySession();
+            self::startSessionIfNotStarted();
+
+        }
+
+        $_SESSION['LAST_ACTIVITY'] = time();
     }
 
     public static function destroySession()
