@@ -32,18 +32,4 @@ class EquipoDAO extends GenericDAO
         return $stmt->execute();
     }
 
-    public function selectById($id)
-    {
-        // Implementación si se necesita
-    }
-
-    public function update($dto)
-    {
-        // Implementación si se necesita
-    }
-
-    public function delete($id)
-    {
-        // Implementación si se necesita
-    }
 }

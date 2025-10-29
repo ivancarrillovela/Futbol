@@ -64,7 +64,7 @@ $equipos = $equipoDAO->selectAll();
 
                     $max_jornada = empty($jornadas) ? 0 : max($jornadas);
 
-                    for ($i = 1; $i <= $max_jornada + 5; $i++) {
+                    for ($i = 1; $i <= $max_jornada; $i++) {
                         $selected = ($jornada_seleccionada == $i) ? ' selected' : '';
                         echo '<option value="' . $i . '"' . $selected . '>Jornada ' . $i . '</option>';
                     }

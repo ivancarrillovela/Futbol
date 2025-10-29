@@ -7,6 +7,22 @@ class PartidoDAO extends GenericDAO
 
     const PARTIDO_TABLE = 'partidos';
 
+    public function selectAll()
+    {
+        $query = "SELECT p.*, el.nombre as nombre_local, ev.nombre as nombre_visitante 
+              FROM " . self::PARTIDO_TABLE . " p
+              JOIN equipos el ON p.id_local = el.id_equipo
+              JOIN equipos ev ON p.id_visitante = ev.id_equipo
+              ORDER BY p.jornada ASC, p.id_partido ASC";
+
+        $result = mysqli_query($this->conn, $query);
+        $partidos = array();
+        while ($partidoDB = mysqli_fetch_assoc($result)) {
+            array_push($partidos, $partidoDB);
+        }
+        return $partidos;
+    }
+
     // Devuelve todos los partidos de un equipo (local o visitante)
     public function selectByEquipoId($id_equipo)
     {
@@ -27,6 +43,25 @@ class PartidoDAO extends GenericDAO
             array_push($partidos, $partidoDB);
         }
         return $partidos;
+    }
+
+    # Inserta un nuevo partido en la tabla partidos devolviendo true si se ha insertado bien
+    public function insert($dto)
+    {
+        // $dto es un array ['id_local', 'id_visitante', 'resultado', 'jornada', 'estadio_partido']
+        $query = "INSERT INTO " . self::PARTIDO_TABLE .
+            " (id_local, id_visitante, resultado, jornada, estadio_partido) VALUES(?,?,?,?,?)";
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param(
+            $stmt,
+            'iisis',
+            $dto['id_local'],
+            $dto['id_visitante'],
+            $dto['resultado'],
+            $dto['jornada'],
+            $dto['estadio_partido']
+        );
+        return $stmt->execute();
     }
 
     //  Devuelve todos los partidos de una jornada
@@ -76,39 +111,4 @@ class PartidoDAO extends GenericDAO
         return $count > 0;
     }
 
-    # Inserta un nuevo partido en la tabla partidos devolviendo true si se ha insertado bien
-    public function insert($dto)
-    {
-        // $dto es un array ['id_local', 'id_visitante', 'resultado', 'jornada', 'estadio_partido']
-        $query = "INSERT INTO " . self::PARTIDO_TABLE .
-            " (id_local, id_visitante, resultado, jornada, estadio_partido) VALUES(?,?,?,?,?)";
-        $stmt = mysqli_prepare($this->conn, $query);
-        mysqli_stmt_bind_param(
-            $stmt,
-            'iisis',
-            $dto['id_local'],
-            $dto['id_visitante'],
-            $dto['resultado'],
-            $dto['jornada'],
-            $dto['estadio_partido']
-        );
-        return $stmt->execute();
-    }
-
-    public function selectAll()
-    {
-        // Implementación si se necesita
-    }
-    public function selectById($id)
-    {
-        // Implementación si se necesita
-    }
-    public function update($dto)
-    {
-        // Implementación si se necesita
-    }
-    public function delete($id)
-    {
-        // Implementación si se necesita
-    }
 }
