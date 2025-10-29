@@ -12,12 +12,10 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="<?php echo $dirHref . "/index.php" ?>">Menu</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand ps-4" href="<?php echo $dirHref . "/index.php" ?>">
+            <img src="<?php echo $dirHref . "/assets/images/ball_icon.png" ?>" alt="" style="height: 30px; width: auto;">
+        </a>
         <div class="collapse navbar-collapse" id="navbarMenu">
             <ul class="navbar-nav mr-auto mt-2 mt-md-0">
                 <li class="nav-item">
