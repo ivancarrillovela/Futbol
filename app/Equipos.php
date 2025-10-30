@@ -7,7 +7,7 @@ require_once $dir . "/../templates/header.php";
 
 $error = "";
 $dao = new EquipoDAO();
- 
+
 $equipos = $dao->selectAll();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nombre'])) {
@@ -29,58 +29,94 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nombre'])) {
 }
 ?>
 
-<h3>Gestión de Equipos</h3>
-<hr>
-
-<div class="card mb-4">
-    <div class="card-header">Equipos Participantes en la Competición</div>
-    <div class="card-body">
-        <ul class="list-group">
-            <?php
-
-            foreach ($equipos as $equipo) {
-                echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
-                echo '    <div>';
-                echo '        <a href="PartidosEquipo.php?id=' . htmlspecialchars($equipo['id_equipo']) . '">';
-                echo '            <strong>' . htmlspecialchars($equipo['nombre']) . '</strong>';
-                echo '        </a>';
-                echo '        <br>';
-                echo '        <small>Estadio: ' . htmlspecialchars($equipo['estadio']) . '</small>';
-                echo '    </div>';
-                echo '</li>';
-            }
-
-            if (empty($equipos)) {
-                echo '<li class="list-group-item">No hay equipos registrados.</li>';
-            }
-
-            ?>
-        </ul>
+<div class="container my-5">
+    <div class="text-center text-md-start">
+        <h1 class="display-4 fw-bold text-success">Gestión de Equipos</h1>
+        <p class="text-muted fs-5">Administra los equipos participantes y añade nuevos competidores.</p>
     </div>
-</div>
 
-<div class="card">
-    <div class="card-header">Añadir Nuevo Equipo</div>
-    <div class="card-body">
-        <?php
+    <hr class="mb-5">
 
-            if (!empty($error)) {
-                echo '<div class="alert alert-danger">' . $error . '</div>';
-            }
-
-        ?>
-        <form action="Equipos.php" method="POST">
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="nombre">Nombre del Equipo</label>
-                    <input type="text" class="form-control" name="nombre" id="nombre" required>
+    <div class="row g-5">
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success bg-gradient text-white fs-5">
+                    <i class="bi bi-list-ul me-2"></i>
+                    Equipos Participantes en la Competición
                 </div>
-                <div class="form-group col-md-6">
-                    <label for="estadio">Estadio</label>
-                    <input type="text" class="form-control" name="estadio" id="estadio" required>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        <?php
+                        if (empty($equipos)) {
+                            echo '<li class="list-group-item text-muted fst-italic p-3">No hay equipos registrados.</li>';
+                        } else {
+                            foreach ($equipos as $equipo) {
+                                echo '<li class="list-group-item list-group-item-action p-3">';
+                                echo '  <div class="d-flex justify-content-between align-items-center">';
+                                echo '      <div>';
+                                // Usamos stretched-link para hacer que todo el <li> sea clickeable
+                                echo '          <a href="PartidosEquipo.php?id=' . htmlspecialchars($equipo['id_equipo']) . '" class="text-success fw-bold text-decoration-none fs-5 stretched-link">';
+                                echo '              <i class="bi bi-people-fill me-2 opacity-75"></i>'; // Icono de equipo
+                                echo '              ' . htmlspecialchars($equipo['nombre']);
+                                echo '          </a>';
+                                echo '          <br>';
+                                echo '          <small class="text-muted ms-4 ps-2">';
+                                echo '              <i class="bi bi-building me-1 opacity-75"></i>'; // Icono de estadio
+                                echo '              Estadio: ' . htmlspecialchars($equipo['estadio']);
+                                echo '          </small>';
+                                echo '      </div>';
+                                echo '      <i class="bi bi-chevron-right text-success opacity-50"></i>'; // Flecha indicadora
+                                echo '  </div>';
+                                echo '</li>';
+                            }
+                        }
+                        ?>
+                    </ul>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary mt-3">Añadir Equipo</button>
-        </form>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success bg-gradient text-white fs-5">
+                    <i class="bi bi-plus-circle-fill me-2"></i>
+                    Añadir Nuevo Equipo
+                </div>
+                <div class="card-body p-4">
+                    <?php
+                    if (!empty($error)) {
+                        // Alerta de error mejorada con icono
+                        echo '<div class="alert alert-danger d-flex align-items-center" role="alert">';
+                        echo '  <i class="bi bi-exclamation-triangle-fill me-2"></i>';
+                        echo '  <div>' . htmlspecialchars($error) . '</div>';
+                        echo '</div>';
+                    }
+                    ?>
+
+                    <form action="Equipos.php" method="POST">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre del Equipo" required>
+                            <label for="nombre">
+                                <i class="bi bi-person-badge me-1"></i>
+                                Nombre del Equipo
+                            </label>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input type="text" class="form-control" name="estadio" id="estadio" placeholder="Estadio" required>
+                            <label for="estadio">
+                                <i class="bi bi-house-door me-1"></i>
+                                Estadio
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100 py-3 fw-bold">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Añadir Equipo
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
-</div>
