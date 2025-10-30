@@ -23,6 +23,25 @@ class EquipoDAO extends GenericDAO
         return $equipos;
     }
 
+    public function selectById($id)
+    {
+        $query = "SELECT nombre, estadio FROM " . self::EQUIPO_TABLE . " WHERE id_equipo=?";
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, 'i', $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_bind_result($stmt, $nombre, $estadio);
+
+        while (mysqli_stmt_fetch($stmt)) {
+            $user = array(
+                'id' => $id,
+                'nombre' => $nombre,
+                'estadio' => $estadio
+            );
+        }
+
+        return $user;
+    }
+
     public function insert($dto)
     {
         $query = "INSERT INTO " . self::EQUIPO_TABLE .
@@ -31,5 +50,4 @@ class EquipoDAO extends GenericDAO
         mysqli_stmt_bind_param($stmt, 'ss', $dto['nombre'], $dto['estadio']);
         return $stmt->execute();
     }
-
 }

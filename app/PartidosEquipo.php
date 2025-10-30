@@ -10,7 +10,6 @@ require_once $dir . "/../templates/header.php";
 // Validar ID
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     echo "<div class='alert alert-danger'>ID de equipo no válido.</div>";
-    require_once __DIR__ . "/../templates/footer.php";
     exit;
 }
 
@@ -24,20 +23,20 @@ $_SESSION['last_team_viewed_id'] = $id_equipo;
 $partidoDAO = new PartidoDAO();
 $equipoDAO = new EquipoDAO(); // Necesario para obtener el nombre del equipo
 
-// Implementación de selectById en EquipoDAO sería útil aquí
-// Por ahora, buscamos en el array completo
-$equipos = $equipoDAO->selectAll();
-$nombre_equipo = "Equipo no encontrado";
+// Ahora buscamos el nombre del equipo por su ID
+$equipo = $equipoDAO->selectById($id_equipo);
 
-// Buscamos el nombre del equipo en el array
-foreach ($equipos as $eq) {
-    if ($eq['id_equipo'] == $id_equipo) {
-        $nombre_equipo = $eq['nombre'];
-        break;
-    }
+// Comprobamos si el equipo fue encontrado
+if ($equipo) {
+    // La variable $equipo es un array (ej: ['id' => 1, 'nombre' => 'Real Madrid', ...])
+    $nombre_equipo = $equipo['nombre'];
+} else {
+    // El ID no existe en la BBDD
+    $nombre_equipo = "Equipo Desconocido";
+    echo "<div class='alert alert-danger'>Error: El equipo con ID $id_equipo no existe.</div>";
 }
 
-$partidos = $partidoDAO->selectByEquipoId($id_equipo);
+$partidos = $partidoDAO->selectById($id_equipo);
 
 ?>
 

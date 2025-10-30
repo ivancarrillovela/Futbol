@@ -14,5 +14,8 @@ abstract class GenericDAO {
 
   // método abstracto para las clases que hereden
   abstract protected function selectAll();
+  abstract protected function selectById($id);
+  abstract protected function insert($dto);
+
 
 }

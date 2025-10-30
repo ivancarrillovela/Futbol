@@ -7,24 +7,27 @@ class PartidoDAO extends GenericDAO
 
     const PARTIDO_TABLE = 'partidos';
 
-    public function selectAll()
-    {
-        $query = "SELECT p.*, el.nombre as nombre_local, ev.nombre as nombre_visitante 
-              FROM " . self::PARTIDO_TABLE . " p
-              JOIN equipos el ON p.id_local = el.id_equipo
-              JOIN equipos ev ON p.id_visitante = ev.id_equipo
-              ORDER BY p.jornada ASC, p.id_partido ASC";
-
+    // Devuelve todos los partidos de la tabla partidos
+    public function selectAll(){
+        $query = "SELECT * FROM " . self::PARTIDO_TABLE;
         $result = mysqli_query($this->conn, $query);
         $partidos = array();
-        while ($partidoDB = mysqli_fetch_assoc($result)) {
-            array_push($partidos, $partidoDB);
+        while ($partidoDB = mysqli_fetch_array($result)) {
+            $partido = array(
+                'id_partido' => $partidoDB["id_partido"],
+                'id_local' => $partidoDB["id_local"],
+                'id_visitante' => $partidoDB["id_visitante"],
+                'resultado' => $partidoDB["resultado"],
+                'jornada' => $partidoDB["jornada"],
+                'estadio_partido' => $partidoDB["estadio_partido"],
+            );
+            array_push($partidos, $partido);
         }
         return $partidos;
     }
 
-    // Devuelve todos los partidos de un equipo (local o visitante)
-    public function selectByEquipoId($id_equipo)
+    // Devuelve todos los partidos por el id de un equipo (local o visitante)
+    public function selectById($id_equipo)
     {
         $query = "SELECT p.*, el.nombre as nombre_local, ev.nombre as nombre_visitante 
               FROM " . self::PARTIDO_TABLE . " p
