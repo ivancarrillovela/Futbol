@@ -49,127 +49,191 @@ $jornadas = $partidoDAO->getJornadas();
 $equipos = $equipoDAO->selectAll();
 ?>
 
-<h3>Gestión de Partidos</h3>
-<hr>
+<div class="container my-5">
+    <div class="text-center text-md-start">
+        <h1 class="display-4 fw-bold text-success">Partidos</h1>
+        <p class="text-muted fs-5">Visualiza los partidos de cada jornada y añade nuevos encuentros.</p>
+    </div>
 
-<div class="card mb-4">
-    <div class="card-header">Seleccionar Jornada</div>
-    <div class="card-body">
-        <form action="Partidos.php" method="GET" class="form-inline">
-            <div class="form-group mr-2">
-                <label for="jornada_select" class="mr-2">Ver Jornada:</label>
-                <select name="jornada" id="jornada_select" class="form-control">
+    <hr class="mb-5">
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success bg-gradient text-white fs-5">
+            <i class="bi bi-calendar-event-fill me-2"></i>
+            Seleccionar Jornada
+        </div>
+        <div class="card-body p-4">
+            <form action="Partidos.php" method="GET" class="d-flex flex-wrap gap-3 align-items-center">
+                <label for="jornada_select" class="fw-bold fs-5 mb-0">Jornadas Actuales:</label>
+                <select name="jornada" id="jornada_select" class="form-select form-select-lg w-auto" required>
                     <option value="">Seleccione...</option>
                     <?php
-
+                    // Asumimos que $jornadas es un array de números de jornada
                     $max_jornada = empty($jornadas) ? 0 : max($jornadas);
-
                     for ($i = 1; $i <= $max_jornada; $i++) {
                         $selected = ($jornada_seleccionada == $i) ? ' selected' : '';
                         echo '<option value="' . $i . '"' . $selected . '>Jornada ' . $i . '</option>';
                     }
-
                     ?>
                 </select>
-            </div>
-            <button type="submit" class="btn btn-primary mt-3">Ver</button>
-        </form>
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-eye-fill me-1"></i>
+                    Ver Partidos
+                </button>
+            </form>
+        </div>
     </div>
-</div>
 
-<?php
+    <div class="row g-5">
 
-// Comprueba si se ha seleccionado una jornada
-if ($jornada_seleccionada) {
+        <div class="col-lg-7">
+            <?php
 
-    // Imprime el encabezado de la jornada
-    echo '<h4>Partidos de la Jornada ' . htmlspecialchars($jornada_seleccionada) . '</h4>';
+            if ($jornada_seleccionada) {
+                echo '<div class="card shadow-sm">';
+                echo '    <div class="card-header bg-success bg-gradient text-white fs-5">';
+                echo '        <i class="bi bi-list-ul me-2"></i>';
+                echo '        Partidos de la Jornada ' . htmlspecialchars($jornada_seleccionada);
+                echo '    </div>';
+                echo '    <div class="card-body p-0">';
 
-    // Inicia el contenedor del grupo de listas
-    echo '<div class="list-group mb-4">';
+                if (empty($partidos_jornada)) {
+                    echo '<div class="alert alert-info d-flex align-items-center rounded-0 m-0" role="alert">';
+                    echo '   <i class="bi bi-info-circle-fill me-2"></i>';
+                    echo '   <div>No hay partidos registrados para esta jornada.</div>';
+                    echo '</div>';
+                } else {
+                    echo '<ul class="list-group list-group-flush">';
 
-    // Comprueba si hay partidos para esta jornada
-    if (empty($partidos_jornada)) {
-        // Si no hay partidos, muestra un mensaje informativo
-        echo '<div class="alert alert-info">No hay partidos registrados para esta jornada.</div>';
-    } else {
-        // Si hay partidos, itera sobre cada uno
-        foreach ($partidos_jornada as $partido) {
-            // Sanitiza los datos para mostrarlos de forma segura
-            $local = htmlspecialchars($partido['nombre_local']);
-            $visitante = htmlspecialchars($partido['nombre_visitante']);
-            $resultado = htmlspecialchars($partido['resultado']);
-            $estadio = htmlspecialchars($partido['estadio_partido']);
+                    foreach ($partidos_jornada as $partido) {
+                        $local = htmlspecialchars($partido['nombre_local']);
+                        $visitante = htmlspecialchars($partido['nombre_visitante']);
+                        $resultado = htmlspecialchars($partido['resultado']);
+                        $estadio = htmlspecialchars($partido['estadio_partido']);
 
-            // Imprime el HTML para cada partido
-            echo '<div class="list-group-item">';
-            echo '    <h5 class="mb-1">' . $local . ' vs ' . $visitante . '</h5>';
-            echo '    <p><strong>Resultado: ' . $resultado . '</strong></p>';
-            echo '    <small>Estadio: ' . $estadio . '</small>';
-            echo '</div>';
-        }
-    }
-    echo '</div>';
-}
+                        echo '<li class="list-group-item p-3">';
+                        echo '   <div class="d-flex justify-content-between align-items-center">';
+                        // Lado izquierdo: Nombres y estadio
+                        echo '     <div>';
+                        echo '       <h5 class="mb-1 text-success fw-bold">';
+                        echo '         <i class="bi bi-shield-shaded me-1 opacity-75"></i>';
+                        echo '         ' . $local . ' vs ' . $visitante;
+                        echo '       </h5>';
+                        echo '       <small class="text-muted ms-4 ps-2">';
+                        echo '         <i class="bi bi-building me-1 opacity-75"></i>';
+                        echo '         Estadio: ' . $estadio;
+                        echo '       </small>';
+                        echo '     </div>';
+                        // Lado derecho: Resultado como badge
+                        echo '     <span class="badge bg-dark bg-gradient fs-4 rounded-pill px-3">';
+                        echo '       ' . $resultado;
+                        echo '     </span>';
+                        echo '   </div>';
+                        echo '</li>';
+                    }
+                    echo '</ul>';
+                }
+                echo '    </div>'; // Cierre de .card-body
+                echo '</div>'; // Cierre de .card
 
-?>
+            } else {
 
+                echo '<div class="card shadow-sm">';
+                echo '    <div class="card-body text-center p-5">';
+                echo '        <i class="bi bi-calendar-week-fill text-success display-3 opacity-50"></i>';
+                echo '        <h3 class="mt-3 text-muted">No has seleccionado una jornada</h3>';
+                echo '        <p class="fs-5 text-muted">Por favor, usa el selector de arriba para ver los partidos.</p>';
+                echo '    </div>';
+                echo '</div>';
+            }
 
-<div class="card mb-4">
-    <div class="card-header">Añadir Nuevo Partido</div>
-    <div class="card-body">
-        <?php
-        if (!empty($error)) {
-            echo '<div class="alert alert-danger">' . htmlspecialchars($error) . '</div>';
-        }
-        ?>
+            ?>
+        </div>
 
-        <form action="Partidos.php" method="POST">
-            <div class="form-row">
-                <div class="form-group col-md-6 mb-3">
-                    <label for="id_local">Equipo Local</label>
-                    <select name="id_local" id="id_local" class="form-control" required>
-                        <option value="">Seleccione...</option>
-                        <?php
-                        foreach ($equipos as $e) {
-                            echo '<option value="' . htmlspecialchars($e['id_equipo']) . '">' . htmlspecialchars($e['nombre']) . '</option>';
-                        }
-                        ?>
-                    </select>
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success bg-gradient text-white fs-5">
+                    <i class="bi bi-plus-circle-fill me-2"></i>
+                    Añadir Nuevo Partido
                 </div>
-                <div class="form-group col-md-6 mb-3">
-                    <label for="id_visitante">Equipo Visitante</label>
-                    <select name="id_visitante" id="id_visitante" class="form-control" required>
-                        <option value="">Seleccione...</option>
-                        <?php
-                        foreach ($equipos as $e) {
-                            echo '<option value="' . htmlspecialchars($e['id_equipo']) . '">' . htmlspecialchars($e['nombre']) . '</option>';
-                        }
-                        ?>
-                    </select>
+                <div class="card-body p-4">
+                    <?php
+                    if (!empty($error)) {
+                        // Alerta de error mejorada (con icono)
+                        echo '<div class="alert alert-danger d-flex align-items-center" role="alert">';
+                        echo '  <i class="bi bi-exclamation-triangle-fill me-2"></i>';
+                        echo '  <div>' . htmlspecialchars($error) . '</div>';
+                        echo '</div>';
+                    }
+                    ?>
+
+                    <form action="Partidos.php" method="POST" class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select name="id_local" id="id_local" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    <?php
+                                    foreach ($equipos as $e) {
+                                        echo '<option value="' . htmlspecialchars($e['id_equipo']) . '">' . htmlspecialchars($e['nombre']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                                <label for="id_local"><i class="bi bi-people-fill me-1"></i> Equipo Local</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select name="id_visitante" id="id_visitante" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    <?php
+                                    foreach ($equipos as $e) {
+                                        echo '<option value="' . htmlspecialchars($e['id_equipo']) . '">' . htmlspecialchars($e['nombre']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                                <label for="id_visitante"><i class="bi bi-people-fill me-1"></i> Equipo Visitante</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input type="number" name="jornada" id="jornada" class="form-control" min="1" required
+                                    placeholder="1"
+                                    value="<?php echo htmlspecialchars($jornada_seleccionada ?? 1); ?>">
+                                <label for="jornada"><i class="bi bi-list-ol me-1"></i> Jornada</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <select name="resultado" id="resultado" class="form-select" required>
+                                    <option value="1">1 (Local)</option>
+                                    <option value="X">X (Empate)</option>
+                                    <option value="2">2 (Visitante)</option>
+                                </select>
+                                <label for="resultado"><i class="bi bi-check-all me-1"></i> Resultado</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input type="text" name="estadio_partido" id="estadio_partido" class="form-control"
+                                    required placeholder="Ej: Estadio del Local">
+                                <label for="estadio_partido"><i class="bi bi-house-door me-1"></i> Estadio</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-success btn-lg w-100 py-3 fw-bold">
+                                <i class="bi bi-check-circle me-2"></i>
+                                Añadir Partido
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <div class="form-row">
-                <div class="form-group col-md-4 mb-3">
-                    <label for="jornada">Jornada</label>
-                    <input type="number" name="jornada" id="jornada" class="form-control" min="1" required
-                        value="<?php echo htmlspecialchars($jornada_seleccionada ?? 1); ?>">
-                </div>
-                <div class="form-group col-md-4 mb-3">
-                    <label for="resultado">Resultado (1, X, 2)</label>
-                    <select name="resultado" id="resultado" class="form-control" required>
-                        <option value="1">1</option>
-                        <option value="X">X</option>
-                        <option value="2">2</option>
-                    </select>
-                </div>
-                <div class="form-group col-md-4 mb-3">
-                    <label for="estadio_partido">Estadio</label>
-                    <input type="text" name="estadio_partido" id="estadio_partido" class="form-control" required
-                        placeholder="Ej: Estadio del Local">
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary mt-3">Añadir Partido</button>
-        </form>
+        </div>
+
     </div>
 </div>
