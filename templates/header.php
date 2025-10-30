@@ -1,5 +1,9 @@
 <?php
+
     $dirHref = "/EjerciciosDWEB/Futbol";
+
+    $paginaActual = basename($_SERVER['PHP_SELF']);
+
 ?>
 
 <head>
@@ -13,20 +17,33 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-md navbar-light bg-light">
-        <a class="navbar-brand ps-4" href="<?php echo $dirHref . "/index.php" ?>">
-            <img src="<?php echo $dirHref . "/assets/images/ball_icon.png" ?>" alt="" style="height: 30px; width: auto;">
+    <nav class="navbar navbar-expand-md navbar-dark bg-success bg-gradient shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="<?php echo $dirHref . "/index.php" ?>">
+            <img src="<?php echo $dirHref . "/assets/images/ball_icon.png" ?>" alt="Logo" style="height: 30px; width: auto;" class="d-inline-block align-text-top me-1">
+            Liga de Futbol
         </a>
-        <div class="collapse navbar-collapse" id="navbarMenu">
-            <ul class="navbar-nav mr-auto mt-2 mt-md-0">
+
+        <div id="navbarMenu">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo $dirHref . "/app/Equipos.php" ?>">Equipos</a>
+                    <a class="nav-link fw-bold <?php echo ($paginaActual == 'Equipos.php') ? 'active' : ''; ?>" href="<?php echo $dirHref . "/app/Equipos.php" ?>">
+                        <i class="bi bi-people-fill me-1"></i>
+                        Equipos
+                    </a>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo $dirHref . "/app/Partidos.php" ?>">Partidos</a>
+                    <a class="nav-link fw-bold <?php echo ($paginaActual == 'Partidos.php') ? 'active' : ''; ?>" href="<?php echo $dirHref . "/app/Partidos.php" ?>">
+                        <i class="bi bi-calendar-event-fill me-1"></i>
+                        Partidos
+                    </a>
                 </li>
+
             </ul>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <div class="container mt-4">
