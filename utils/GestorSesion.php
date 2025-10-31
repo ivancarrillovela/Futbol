@@ -17,6 +17,9 @@ class GestorSesion
      * Este método es privado para ser utilizado solo dentro de esta clase, 
      * asegurando que la sesión se inicie de manera controlada.
      */
+
+    const INACTIVITY_TIME = 60; // Tiempo de inactividad en segundos antes de destruir la sesión.
+
     private static function startSessionIfNotStarted()
     {
         if (session_status() == PHP_SESSION_NONE) {
@@ -36,7 +39,7 @@ class GestorSesion
         self::startSessionIfNotStarted();
 
         // Comprueba si ha pasado el tiempo de inactividad.
-        if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 60)) {
+        if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > self::INACTIVITY_TIME)) {
 
             // Si ha pasado el tiempo, destruye la sesión actual.
             self::destroySession();
@@ -53,6 +56,7 @@ class GestorSesion
      * 
      * Limpia todas las variables de sesión, elimina la cookie de sesión del navegador
      * y finalmente destruye la sesión en el servidor para invalidarla por completo.
+     * Al hacer esto en vez de solo destruir la sesión se ayuda a prevenir ataques de secuestro de sesión.
      */
     public static function destroySession()
     {
@@ -64,8 +68,8 @@ class GestorSesion
         // Si existe una cookie de sesión, la elimina.
         if (session_id() != "" || isset($_COOKIE[session_name()])) {
             // Establece la cookie con una fecha de expiración en el pasado para que el navegador la elimine.
-            setcookie(session_name(), '', time() - 2592000, '/');
-        }
+            setcookie(session_name(), '', time() - (new DateInterval('P30D'))->format('%s'), '/'); // Expira hace 30 días
+        };
 
         // Destruye la sesión en el servidor.
         session_destroy();
