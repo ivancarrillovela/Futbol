@@ -1,10 +1,13 @@
 <?php
 
-    $dirHref = "/EjerciciosDWEB/Futbol";
+$dirHref = "/EjerciciosDWEB/Futbol";
 
-    $paginaActual = basename($_SERVER['PHP_SELF']);
+$paginaActual = basename($_SERVER['PHP_SELF']);
 
 ?>
+
+<!DOCTYPE html>
+<html lang="es">
 
 <head>
     <meta charset="utf-8">
@@ -18,32 +21,30 @@
 <body>
 
     <nav class="navbar navbar-expand-md navbar-dark bg-success bg-gradient shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="<?php echo $dirHref . "/index.php" ?>">
-            <img src="<?php echo $dirHref . "/assets/images/ball_icon.png" ?>" alt="Logo" style="height: 30px; width: auto;" class="d-inline-block align-text-top me-1">
-            Liga de Futbol
-        </a>
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="<?php echo $dirHref . "/index.php" ?>">
+                <img src="<?php echo $dirHref . "/assets/images/ball_icon.png" ?>" alt="Logo" style="height: 30px; width: auto;" class="d-inline-block align-text-top me-1">
+                Liga de Futbol
+            </a>
 
-        <div id="navbarMenu">
-            <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                
-                <li class="nav-item">
-                    <a class="nav-link fw-bold <?php echo ($paginaActual == 'Equipos.php') ? 'active' : ''; ?>" href="<?php echo $dirHref . "/app/Equipos.php" ?>">
-                        <i class="bi bi-people-fill me-1"></i>
-                        Equipos
-                    </a>
-                </li>
+            <div id="navbarMenu">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
 
-                <li class="nav-item">
-                    <a class="nav-link fw-bold <?php echo ($paginaActual == 'Partidos.php') ? 'active' : ''; ?>" href="<?php echo $dirHref . "/app/Partidos.php" ?>">
-                        <i class="bi bi-calendar-event-fill me-1"></i>
-                        Partidos
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold <?php echo ($paginaActual == 'Equipos.php') ? 'active' : ''; ?>" href="<?php echo $dirHref . "/app/Equipos.php" ?>">
+                            <i class="bi bi-people-fill me-1"></i>
+                            Equipos
+                        </a>
+                    </li>
 
-            </ul>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold <?php echo ($paginaActual == 'Partidos.php') ? 'active' : ''; ?>" href="<?php echo $dirHref . "/app/Partidos.php" ?>">
+                            <i class="bi bi-calendar-event-fill me-1"></i>
+                            Partidos
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
-
-    <div class="container mt-4">
+    </nav>
