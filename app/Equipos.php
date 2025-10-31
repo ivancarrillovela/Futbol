@@ -24,15 +24,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nombre'])) {
         header("Location: Equipos.php");
         exit;
     } else {
-        $error = "Debe rellenar todos los campos.";
+        $error = "Debes rellenar todos los campos.";
     }
 }
 ?>
 
 <div class="container my-5">
     <div class="text-center text-md-start">
-        <h1 class="display-4 fw-bold text-success">Gestión de Equipos</h1>
-        <p class="text-muted fs-5">Administra los equipos participantes y añade nuevos competidores.</p>
+        <h1 class="display-4 fw-bold text-success">Equipos</h1>
+        <p class="text-muted fs-5">Visualiza los equipos participantes y añade nuevos competidores.</p>
     </div>
 
     <hr class="mb-5">
@@ -123,5 +123,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nombre'])) {
 </div>
 
 <?php
-    require_once $dir . "/../templates/footer.php";
+require_once $dir . "/../templates/footer.php";
 ?>

@@ -122,5 +122,7 @@ $partidos = $partidoDAO->selectById($id_equipo);
 </div>
 
 <?php
-    require_once $dir . "/../templates/footer.php";
+
+require_once $dir . "/../templates/footer.php";
+
 ?>

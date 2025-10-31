@@ -17,7 +17,6 @@ class GestorSesion
 
             self::destroySession();
             self::startSessionIfNotStarted();
-
         }
 
         $_SESSION['LAST_ACTIVITY'] = time();

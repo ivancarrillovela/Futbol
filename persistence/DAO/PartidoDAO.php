@@ -8,7 +8,8 @@ class PartidoDAO extends GenericDAO
     const PARTIDO_TABLE = 'partidos';
 
     // Devuelve todos los partidos de la tabla partidos
-    public function selectAll(){
+    public function selectAll()
+    {
         $query = "SELECT * FROM " . self::PARTIDO_TABLE;
         $result = mysqli_query($this->conn, $query);
         $partidos = array();
@@ -113,5 +114,4 @@ class PartidoDAO extends GenericDAO
         $count = mysqli_fetch_assoc($result)['count'];
         return $count > 0;
     }
-
 }

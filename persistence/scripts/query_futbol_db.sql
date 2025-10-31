@@ -14,36 +14,34 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- Volcando base de datos futboldb
-CREATE DATABASE IF NOT EXISTS 'futbolDB' DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- Seleccionando base de datos futboldb
-USE 'futbolDB';
+-- Volcando estructura de base de datos para futbol_db
+CREATE DATABASE IF NOT EXISTS `futbol_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
+USE `futbol_db`;
 
--- Volcando estructura para tabla futboldb.equipos
+-- Volcando estructura para tabla futbol_db.equipos
 CREATE TABLE IF NOT EXISTS `equipos` (
   `id_equipo` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(100) NOT NULL,
   `estadio` varchar(100) NOT NULL,
   PRIMARY KEY (`id_equipo`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla futboldb.equipos: ~11 rows (aproximadamente)
-INSERT INTO `equipos` (`nombre`, `estadio`) VALUES
-	('Real Madrid CF', 'Santiago Bernabéu'),
-	('FC Barcelona', 'Spotify Camp Nou'),
-	('Atlético de Madrid', 'Cívitas Metropolitano'),
-	('Athletic Club', 'San Mamés'),
-	('Real Sociedad', 'Reale Arena'),
-	('CA Osasuna', 'El Sadar'),
-	('Sevilla FC', 'Ramón Sánchez-Pizjuán'),
-	('Valencia CF', 'Mestalla'),
-	('Real Betis', 'Benito Villamarín'),
-	('Villarreal CF', 'Estadio de la Cerámica'),
-	('Mutilvera', 'Polideportivo Mutilva');
+-- Volcando datos para la tabla futbol_db.equipos: ~10 rows (aproximadamente)
+INSERT INTO `equipos` (`id_equipo`, `nombre`, `estadio`) VALUES
+	(1, 'Real Madrid CF', 'Santiago Bernabéu'),
+	(2, 'FC Barcelona', 'Spotify Camp Nou'),
+	(3, 'Atlético de Madrid', 'Cívitas Metropolitano'),
+	(4, 'Athletic Club', 'San Mamés'),
+	(5, 'Real Sociedad', 'Reale Arena'),
+	(6, 'CA Osasuna', 'El Sadar'),
+	(7, 'Sevilla FC', 'Ramón Sánchez-Pizjuán'),
+	(8, 'Valencia CF', 'Mestalla'),
+	(9, 'Real Betis', 'Benito Villamarín'),
+	(10, 'Villarreal CF', 'Estadio de la Cerámica');
 
--- Volcando estructura para tabla futboldb.partidos
+-- Volcando estructura para tabla futbol_db.partidos
 CREATE TABLE IF NOT EXISTS `partidos` (
   `id_partido` int(11) NOT NULL AUTO_INCREMENT,
   `id_local` int(11) NOT NULL,
@@ -58,18 +56,18 @@ CREATE TABLE IF NOT EXISTS `partidos` (
   CONSTRAINT `partidos_ibfk_1` FOREIGN KEY (`id_local`) REFERENCES `equipos` (`id_equipo`) ON DELETE CASCADE,
   CONSTRAINT `partidos_ibfk_2` FOREIGN KEY (`id_visitante`) REFERENCES `equipos` (`id_equipo`) ON DELETE CASCADE,
   CONSTRAINT `CONSTRAINT_1` CHECK (`id_local` <> `id_visitante`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla futboldb.partidos: ~8 rows (aproximadamente)
-INSERT INTO `partidos` (`id_local`, `id_visitante`, `resultado`, `jornada`, `estadio_partido`) VALUES
-	(12, 14, '1', 1, 'Santiago Bernabéu'),
-	(13, 18, 'X', 1, 'Spotify Camp Nou'),
-	(15, 16, '2', 1, 'San Mamés'),
-	(19, 20, '1', 1, 'Mestalla'),
-	(14, 13, 'X', 2, 'Cívitas Metropolitano'),
-	(18, 12, '2', 2, 'Ramón Sánchez-Pizjuán'),
-	(16, 19, '1', 2, 'Reale Arena'),
-	(20, 15, '1', 2, 'Benito Villamarín');
+-- Volcando datos para la tabla futbol_db.partidos: ~8 rows (aproximadamente)
+INSERT INTO `partidos` (`id_partido`, `id_local`, `id_visitante`, `resultado`, `jornada`, `estadio_partido`) VALUES
+	(1, 1, 2, '1', 1, 'Santiago Bernabéu'),
+	(2, 3, 7, 'X', 1, 'Cívitas Metropolitano'),
+	(3, 4, 5, '2', 1, 'San Mamés'),
+	(4, 6, 8, '1', 1, 'El Sadar'),
+	(5, 9, 10, 'X', 1, 'Benito Villamarín'),
+	(6, 2, 3, '1', 2, 'Spotify Camp Nou'),
+	(7, 1, 7, '1', 2, 'Santiago Bernabéu'),
+	(8, 5, 9, '2', 2, 'Reale Arena');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
