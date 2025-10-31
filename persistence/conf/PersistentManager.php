@@ -1,19 +1,36 @@
 <?php
 
+/**
+ * @author ivanc
+ * 
+ * This class manages the connection to the database.
+ * It follows the Singleton pattern to ensure that there is only one instance of the connection.
+ */
 class PersistentManager
 {
 
-    // Instancia privada de conexión.
+    /**
+     * Private instance of the connection.
+     * @var PersistentManager
+     */
     private static $instance = null;
-    //Conexión a BD
+    /**
+     * Connection to the database.
+     * @var mysqli
+     */
     private static $connection = null;
-    //Parámetros de conexión a la BD.
+    /**
+     * Database connection parameters.
+     */
     private $userBD = "";
     private $psswdBD = "";
     private $nameBD = "";
     private $hostBD = "";
 
-    //Get de la conexión
+    /**
+     * Get the instance of the connection.
+     * @return PersistentManager
+     */
     public static function getInstance()
     {
         if (!self::$instance instanceof self) {
@@ -22,8 +39,10 @@ class PersistentManager
         return self::$instance;
     }
 
-    //Constructor de la clase privado: solo queremos construir una instancia
-    //Se encarga de establecer una conexion con nuestro GBBDD.
+    /**
+     * Private constructor of the class: we only want to build one instance.
+     * It is in charge of establishing a connection with our GBBDD.
+     */
     private function __construct()
     {
         $this->establishCredentials();
@@ -33,10 +52,13 @@ class PersistentManager
         mysqli_query(PersistentManager::$connection, "SET NAMES 'utf8'");
     }
 
+    /**
+     * Establishes the credentials for the database connection from a JSON file.
+     */
     private function establishCredentials()
     {
         $dir = __DIR__;
-        // Lectura de parametros de configuración desde archivo externo
+        // Reading configuration parameters from an external file
         if (file_exists($dir . '\credentials.json')) {
             $credentialsJSON = file_get_contents($dir . '\credentials.json');
             $credentials = json_decode($credentialsJSON, true);
@@ -48,19 +70,26 @@ class PersistentManager
         }
     }
 
-    //Cierra la conexión.
+    /**
+     * Closes the connection.
+     */
     public function close_connection()
     {
         mysqli_close($this->get_connection());
     }
 
-    //Retorna la instancia de la conexión
+    /**
+     * Returns the instance of the connection.
+     * @return mysqli
+     */
     function get_connection()
     {
         return PersistentManager::$connection;
     }
 
-    //Getters y Setters de los parámetros de configuración de BD.
+    /**
+     * Getters and Setters for the BD configuration parameters.
+     */
     function get_hostBD()
     {
         return $this->hostBD;

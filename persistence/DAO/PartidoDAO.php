@@ -1,13 +1,28 @@
 <?php
 
+/**
+ * @author ivanc
+ * 
+ * DAO para la tabla de partidos.
+ * Hereda de GenericDAO y proporciona los métodos para realizar operaciones CRUD
+ * (Crear, Leer, Actualizar, Borrar) y otras consultas específicas para la tabla de partidos.
+ */
+
 require_once 'GenericDAO.php';
 
 class PartidoDAO extends GenericDAO
 {
 
+    /**
+     * Constante que almacena el nombre de la tabla de partidos.
+     */
     const PARTIDO_TABLE = 'partidos';
 
-    // Devuelve todos los partidos de la tabla partidos
+    /**
+     * Selecciona todos los partidos registrados en la base de datos.
+     *
+     * @return array Un array de arrays asociativos, donde cada array representa un partido.
+     */
     public function selectAll()
     {
         $query = "SELECT * FROM " . self::PARTIDO_TABLE;
@@ -27,7 +42,12 @@ class PartidoDAO extends GenericDAO
         return $partidos;
     }
 
-    // Devuelve todos los partidos por el id de un equipo (local o visitante)
+    /**
+     * Selecciona todos los partidos de un equipo específico, ya sea como local o como visitante.
+     *
+     * @param int $id_equipo El ID del equipo a buscar.
+     * @return array Un array de partidos, incluyendo los nombres de los equipos local y visitante.
+     */
     public function selectById($id_equipo)
     {
         $query = "SELECT p.*, el.nombre as nombre_local, ev.nombre as nombre_visitante 
@@ -49,10 +69,15 @@ class PartidoDAO extends GenericDAO
         return $partidos;
     }
 
-    # Inserta un nuevo partido en la tabla partidos devolviendo true si se ha insertado bien
+    /**
+     * Inserta un nuevo partido en la base de datos.
+     *
+     * @param array $dto Un array asociativo con los datos del partido a insertar.
+     * @return bool Devuelve true si la inserción fue exitosa, false en caso contrario.
+     */
     public function insert($dto)
     {
-        // $dto es un array ['id_local', 'id_visitante', 'resultado', 'jornada', 'estadio_partido']
+        // El array $dto debe contener: ['id_local', 'id_visitante', 'resultado', 'jornada', 'estadio_partido']
         $query = "INSERT INTO " . self::PARTIDO_TABLE .
             " (id_local, id_visitante, resultado, jornada, estadio_partido) VALUES(?,?,?,?,?)";
         $stmt = mysqli_prepare($this->conn, $query);
@@ -68,7 +93,12 @@ class PartidoDAO extends GenericDAO
         return $stmt->execute();
     }
 
-    //  Devuelve todos los partidos de una jornada
+    /**
+     * Selecciona todos los partidos correspondientes a una jornada específica.
+     *
+     * @param int $jornada El número de la jornada a consultar.
+     * @return array Un array de partidos para la jornada especificada.
+     */
     public function selectByJornada($jornada)
     {
         $query = "SELECT p.*, el.nombre as nombre_local, ev.nombre as nombre_visitante 
@@ -90,7 +120,11 @@ class PartidoDAO extends GenericDAO
         return $partidos;
     }
 
-    // Devuelve una lista de jornadas únicas que ya tienen partidos
+    /**
+     * Obtiene una lista de los números de jornada únicos que ya tienen partidos registrados.
+     *
+     * @return array Un array con los números de las jornadas existentes.
+     */
     public function getJornadas()
     {
         $query = "SELECT DISTINCT jornada FROM " . self::PARTIDO_TABLE . " ORDER BY jornada ASC";
@@ -102,7 +136,13 @@ class PartidoDAO extends GenericDAO
         return $jornadas;
     }
 
-    // Comprueba si esos dos equipos ya han jugado
+    /**
+     * Comprueba si ya existe un partido entre dos equipos, sin importar quién es local o visitante.
+     *
+     * @param int $id_local El ID del equipo que juega como local.
+     * @param int $id_visitante El ID del equipo que juega como visitante.
+     * @return bool Devuelve true si el partido ya existe, false en caso contrario.
+     */
     public function checkPartidoExists($id_local, $id_visitante)
     {
         $query = "SELECT COUNT(*) as count FROM " . self::PARTIDO_TABLE .

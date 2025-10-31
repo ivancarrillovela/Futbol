@@ -1,26 +1,44 @@
 <?php
 
+/**
+ * @author ivanc
+ * 
+ * Este script PHP se encarga de gestionar la página de partidos de fútbol.
+ * Permite a los usuarios ver los partidos de una jornada específica, añadir nuevos partidos
+ * y seleccionar una jornada para ver sus partidos.
+ * Utiliza una arquitectura DAO para interactuar con la base de datos.
+ */
+
+// Define el directorio actual para facilitar la inclusión de archivos.
 $dir = __DIR__;
 
+// Requiere los archivos DAO necesarios para la manipulación de datos de partidos y equipos,
+// y el encabezado de la página para mantener una estructura consistente.
 require_once $dir . "/../persistence/DAO/PartidoDAO.php";
 require_once $dir . "/../persistence/DAO/EquipoDAO.php";
 require_once $dir . "/../templates/header.php";
 
-$error = "";
-$partidos_jornada = [];
-$partidoDAO = new PartidoDAO();
-$equipoDAO = new EquipoDAO();
+// Inicialización de variables.
+$error = ""; // Almacena mensajes de error para ser mostrados al usuario.
+$partidos_jornada = []; // Almacenará los partidos de la jornada seleccionada.
+$partidoDAO = new PartidoDAO(); // Objeto para acceder a los datos de los partidos.
+$equipoDAO = new EquipoDAO(); // Objeto para acceder a los datos de los equipos.
 
+// Procesamiento del formulario de inserción de un nuevo partido.
+// Se ejecuta cuando el método de la petición es POST y se ha enviado el id_local.
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_local'])) {
     $id_local = $_POST['id_local'];
     $id_visitante = $_POST['id_visitante'];
 
+    // Validación: el equipo local y el visitante no pueden ser el mismo.
     if ($id_local == $id_visitante) {
         $error = "El equipo local y visitante no pueden ser el mismo.";
     } else {
+        // Validación: los equipos no deben haber jugado un partido entre ellos anteriormente.
         if ($partidoDAO->checkPartidoExists($id_local, $id_visitante)) {
             $error = "Estos dos equipos no pueden volver a jugar ya que han jugado un partido anteriormente.";
         } else {
+            // Creación de un array con los datos del nuevo partido.
             $nuevoPartido = [
                 'id_local' => $id_local,
                 'id_visitante' => $id_visitante,
@@ -28,9 +46,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_local'])) {
                 'jornada' => $_POST['jornada'],
                 'estadio_partido' => $_POST['estadio_partido']
             ];
+            // Inserción del nuevo partido en la base de datos.
             if (!$partidoDAO->insert($nuevoPartido)) {
                 $error = "Error al guardar el partido.";
             } else {
+                // Redirección a la misma página para mostrar la jornada actualizada y evitar reenvío de formulario.
                 header("Location: Partidos.php?jornada=" . $_POST['jornada']);
                 exit;
             }
@@ -38,15 +58,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_local'])) {
     }
 }
 
-// Lógica para MOSTRAR partidos de una jornada
+// Lógica para mostrar los partidos de una jornada específica.
+// La jornada se obtiene del parámetro GET 'jornada'.
 $jornada_seleccionada = $_GET['jornada'] ?? null;
 if ($jornada_seleccionada) {
     $partidos_jornada = $partidoDAO->selectByJornada($jornada_seleccionada);
 }
 
-// Datos para los formularios
-$jornadas = $partidoDAO->getJornadas();
-$equipos = $equipoDAO->selectAll();
+// Obtención de datos necesarios para los formularios.
+$jornadas = $partidoDAO->getJornadas(); // Lista de jornadas existentes.
+$equipos = $equipoDAO->selectAll(); // Lista de todos los equipos.
 ?>
 
 <div class="container my-5">
@@ -68,9 +89,11 @@ $equipos = $equipoDAO->selectAll();
                 <select name="jornada" id="jornada_select" class="form-select form-select-lg w-auto" required>
                     <option value="">Seleccione...</option>
                     <?php
-                    // Asumimos que $jornadas es un array de números de jornada
+                    // Genera las opciones del selector de jornadas.
+                    // Se asume que $jornadas es un array de números de jornada.
                     $max_jornada = empty($jornadas) ? 0 : max($jornadas);
                     for ($i = 1; $i <= $max_jornada; $i++) {
+                        // Marca la jornada seleccionada actualmente.
                         $selected = ($jornada_seleccionada == $i) ? ' selected' : '';
                         echo '<option value="' . $i . '"' . $selected . '>Jornada ' . $i . '</option>';
                     }
@@ -88,7 +111,7 @@ $equipos = $equipoDAO->selectAll();
 
         <div class="col-lg-7">
             <?php
-
+            // Muestra los partidos si se ha seleccionado una jornada.
             if ($jornada_seleccionada) {
                 echo '<div class="card shadow-sm">';
                 echo '    <div class="card-header bg-success bg-gradient text-white fs-5">';
@@ -97,15 +120,18 @@ $equipos = $equipoDAO->selectAll();
                 echo '    </div>';
                 echo '    <div class="card-body p-0">';
 
+                // Si no hay partidos para la jornada, muestra un mensaje informativo.
                 if (empty($partidos_jornada)) {
                     echo '<div class="alert alert-info d-flex align-items-center rounded-0 m-0" role="alert">';
                     echo '   <i class="bi bi-info-circle-fill me-2"></i>';
                     echo '   <div>No hay partidos registrados para esta jornada.</div>';
                     echo '</div>';
                 } else {
+                    // Si hay partidos, los muestra en una lista.
                     echo '<ul class="list-group list-group-flush">';
 
                     foreach ($partidos_jornada as $partido) {
+                        // Sanitiza los datos antes de mostrarlos para prevenir XSS.
                         $local = htmlspecialchars($partido['nombre_local']);
                         $visitante = htmlspecialchars($partido['nombre_visitante']);
                         $resultado = htmlspecialchars($partido['resultado']);
@@ -113,7 +139,7 @@ $equipos = $equipoDAO->selectAll();
 
                         echo '<li class="list-group-item p-3">';
                         echo '   <div class="d-flex justify-content-between align-items-center">';
-                        // Lado izquierdo: Nombres y estadio
+                        // Lado izquierdo: Nombres de equipos y estadio.
                         echo '     <div>';
                         echo '       <h5 class="mb-1 text-success fw-bold">';
                         echo '         <i class="bi bi-shield-shaded me-1 opacity-75"></i>';
@@ -124,7 +150,7 @@ $equipos = $equipoDAO->selectAll();
                         echo '         Estadio: ' . $estadio;
                         echo '       </small>';
                         echo '     </div>';
-                        // Lado derecho: Resultado como badge
+                        // Lado derecho: Resultado del partido.
                         echo '     <span class="badge bg-dark bg-gradient fs-4 rounded-pill px-3">';
                         echo '       ' . $resultado;
                         echo '     </span>';
@@ -137,7 +163,7 @@ $equipos = $equipoDAO->selectAll();
                 echo '</div>'; // Cierre de .card
 
             } else {
-
+                // Si no se ha seleccionado ninguna jornada, muestra un mensaje pidiéndolo.
                 echo '<div class="card shadow-sm">';
                 echo '    <div class="card-body text-center p-5">';
                 echo '        <i class="bi bi-calendar-week-fill text-success display-3 opacity-50"></i>';
@@ -158,8 +184,8 @@ $equipos = $equipoDAO->selectAll();
                 </div>
                 <div class="card-body p-4">
                     <?php
+                    // Muestra un mensaje de error si existe alguno.
                     if (!empty($error)) {
-                        // Alerta de error mejorada (con icono)
                         echo '<div class="alert alert-danger d-flex align-items-center" role="alert">';
                         echo '  <i class="bi bi-exclamation-triangle-fill me-2"></i>';
                         echo '  <div>' . htmlspecialchars($error) . '</div>';
@@ -173,6 +199,7 @@ $equipos = $equipoDAO->selectAll();
                                 <select name="id_local" id="id_local" class="form-select" required>
                                     <option value="">Seleccione...</option>
                                     <?php
+                                    // Rellena el selector de equipo local con los equipos de la BD.
                                     foreach ($equipos as $e) {
                                         echo '<option value="' . htmlspecialchars($e['id_equipo']) . '">' . htmlspecialchars($e['nombre']) . '</option>';
                                     }
@@ -187,6 +214,7 @@ $equipos = $equipoDAO->selectAll();
                                 <select name="id_visitante" id="id_visitante" class="form-select" required>
                                     <option value="">Seleccione...</option>
                                     <?php
+                                    // Rellena el selector de equipo visitante con los equipos de la BD.
                                     foreach ($equipos as $e) {
                                         echo '<option value="' . htmlspecialchars($e['id_equipo']) . '">' . htmlspecialchars($e['nombre']) . '</option>';
                                     }
@@ -198,10 +226,8 @@ $equipos = $equipoDAO->selectAll();
 
                         <div class="col-md-4">
                             <div class="form-floating">
-                                <input type="number" name="jornada" id="jornada" class="form-control" min="1" max="<?php echo count($jornadas) + 1 ?? 1; ?>"
-                                    required placeholder="1 required
-                                    placeholder=" 1"
-                                    value="<?php echo htmlspecialchars($jornada_seleccionada ?? 1); ?>">
+                                <!-- Campo para ingresar la jornada del partido. He puesto que el max sea la cantidad total de jornadas + 1 para controlar que solo se pueda añadir 1 jornada más de las existentes y por ejemplo no pasar de la jornada 3 a la 18 de golpe. -->
+                                <input type="number" name="jornada" id="jornada" class="form-control" min="1" max="<?php echo count($jornadas) + 1 ?? 1; ?>" required placeholder="1" value="<?php echo htmlspecialchars($jornada_seleccionada ?? 1); ?>">
                                 <label for="jornada"><i class="bi bi-list-ol me-1"></i> Jornada</label>
                             </div>
                         </div>
@@ -219,8 +245,7 @@ $equipos = $equipoDAO->selectAll();
 
                         <div class="col-md-4">
                             <div class="form-floating">
-                                <input type="text" name="estadio_partido" id="estadio_partido" class="form-control"
-                                    required placeholder="Ej: Estadio del Local">
+                                <input type="text" name="estadio_partido" id="estadio_partido" class="form-control" required placeholder="Ej: Estadio del Local">
                                 <label for="estadio_partido"><i class="bi bi-house-door me-1"></i> Estadio</label>
                             </div>
                         </div>
@@ -240,7 +265,7 @@ $equipos = $equipoDAO->selectAll();
 </div>
 
 <?php
-
+// Incluye el footer.
 require_once $dir . "/../templates/footer.php";
 
 ?>

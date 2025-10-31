@@ -1,26 +1,43 @@
 <?php
 
+/**
+ * @author ivanc
+ * 
+ * Este script gestiona la página de equipos de la competición.
+ * Permite visualizar la lista de equipos existentes y añadir nuevos equipos a la base de datos.
+ * Utiliza EquipoDAO para interactuar con la base de datos.
+ */
+
+// Directorio actual
 $dir = __DIR__;
 
+// Requerir dependencias
 require_once $dir . "/../persistence/DAO/EquipoDAO.php";
 require_once $dir . "/../templates/header.php";
 
+// Inicializar variables
 $error = "";
 $dao = new EquipoDAO();
 
+// Obtener todos los equipos
 $equipos = $dao->selectAll();
 
+// Si se ha enviado el formulario para añadir un nuevo equipo
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nombre'])) {
+    // Validar que los campos no estén vacíos
     if (!empty($_POST['nombre']) && !empty($_POST['estadio'])) {
+        // Crear un array con los datos del nuevo equipo
         $nuevoEquipo = [
             'nombre' => $_POST['nombre'],
             'estadio' => $_POST['estadio']
         ];
 
+        // Insertar el nuevo equipo en la base de datos
         if (!$dao->insert($nuevoEquipo)) {
             $error = "¡Error al añadir el equipo! Puede que el equipo ya exista.";
         }
 
+        // Redirigir a la página de equipos para mostrar la lista actualizada
         header("Location: Equipos.php");
         exit;
     } else {
@@ -47,9 +64,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nombre'])) {
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
                         <?php
+                        // Si no hay equipos, mostrar un mensaje
                         if (empty($equipos)) {
                             echo '<li class="list-group-item text-muted fst-italic p-3">No hay equipos registrados.</li>';
                         } else {
+                            // Si hay equipos, mostrarlos en una lista
                             foreach ($equipos as $equipo) {
                                 echo '<li class="list-group-item list-group-item-action p-3">';
                                 echo '  <div class="d-flex justify-content-between align-items-center">';
@@ -84,6 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nombre'])) {
                 </div>
                 <div class="card-body p-4">
                     <?php
+                    // Si hay un error, mostrarlo
                     if (!empty($error)) {
                         // Alerta de error mejorada con icono
                         echo '<div class="alert alert-danger d-flex align-items-center" role="alert">';
@@ -123,5 +143,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nombre'])) {
 </div>
 
 <?php
+// Incluye el footer
 require_once $dir . "/../templates/footer.php";
 ?>

@@ -1,41 +1,55 @@
 <?php
 
+/**
+ * @author ivanc
+ * 
+ * Este script PHP se encarga de mostrar los partidos de un equipo de fútbol específico.
+ * La página muestra el historial de partidos del equipo, obtenido a través de un ID de equipo
+ * proporcionado por la URL (método GET). Además, guarda el equipo visitado en la sesión del usuario.
+ */
+
+// Define el directorio actual para facilitar la inclusión de archivos.
 $dir = __DIR__;
 
+// Requiere los archivos DAO para la manipulación de datos, el gestor de sesión y el encabezado de la página.
 require_once $dir . "/../persistence/DAO/PartidoDAO.php";
 require_once $dir . "/../persistence/DAO/EquipoDAO.php";
 require_once $dir . "/../utils/GestorSesion.php";
 require_once $dir . "/../templates/header.php";
 
-// Validar ID
+// Validación del ID del equipo.
+// Comprueba si el ID del equipo está presente en la URL y si es un valor numérico.
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     echo "<div class='alert alert-danger'>ID de equipo no válido.</div>";
-    exit;
+    exit; // Termina la ejecución del script si el ID no es válido.
 }
 
+// Convierte el ID del equipo a un entero para mayor seguridad.
 $id_equipo = (int)$_GET['id'];
 
-// LÓGICA DE SESIÓN: Guardar este equipo como el último visto
-GestorSesion::startSession(); // Inicia y asegura la sesión
+// Gestión de la sesión: guarda el equipo actual como el último visitado.
+// Esto permite una navegación más fluida para el usuario.
+GestorSesion::startSession(); // Inicia o reanuda la sesión.
 $_SESSION['last_team_viewed_id'] = $id_equipo;
 
-// Obtener datos
+// Creación de instancias de los DAO para acceder a la base de datos.
 $partidoDAO = new PartidoDAO();
-$equipoDAO = new EquipoDAO(); // Necesario para obtener el nombre del equipo
+$equipoDAO = new EquipoDAO(); // Necesario para obtener el nombre del equipo.
 
-// Ahora buscamos el nombre del equipo por su ID
+// Búsqueda del nombre del equipo por su ID.
 $equipo = $equipoDAO->selectById($id_equipo);
 
-// Comprobamos si el equipo fue encontrado
+// Comprobación de si el equipo fue encontrado en la base de datos.
 if ($equipo) {
-    // La variable $equipo es un array (ej: ['id' => 1, 'nombre' => 'Real Madrid', ...])
+    // Si se encuentra, se asigna el nombre a una variable.
     $nombre_equipo = $equipo['nombre'];
 } else {
-    // El ID no existe en la BBDD
+    // Si no se encuentra, se asigna un nombre por defecto y se muestra un error.
     $nombre_equipo = "Equipo Desconocido";
     echo "<div class='alert alert-danger'>Error: El equipo con ID $id_equipo no existe.</div>";
 }
 
+// Obtención de todos los partidos jugados por el equipo (tanto de local como de visitante).
 $partidos = $partidoDAO->selectById($id_equipo);
 
 ?>
@@ -67,28 +81,30 @@ $partidos = $partidoDAO->selectById($id_equipo);
 
                 <div class="card-body p-0">
                     <?php
+                    // Comprueba si el equipo ha jugado algún partido.
                     if (empty($partidos)) {
-                        // Alerta por si el equipo no ha jugado partidos
+                        // Si no hay partidos, muestra un mensaje informativo.
                         echo '<div class="alert alert-info d-flex align-items-center rounded-0 m-0" role="alert">';
                         echo '  <i class="bi bi-info-circle-fill me-2"></i>';
                         echo '  <div>Este equipo aún no ha jugado partidos.</div>';
                         echo '</div>';
                     } else {
-                        // Lista de Partidos
+                        // Si hay partidos, los muestra en una lista.
                         echo '<ul class="list-group list-group-flush">';
 
                         foreach ($partidos as $partido) {
+                            // Sanitiza los datos para prevenir ataques XSS.
                             $jornada = htmlspecialchars($partido['jornada']);
                             $local = htmlspecialchars($partido['nombre_local']);
                             $visitante = htmlspecialchars($partido['nombre_visitante']);
                             $resultado = htmlspecialchars($partido['resultado']);
                             $estadio = htmlspecialchars($partido['estadio_partido']);
 
-                            // Resaltar el equipo actual en el enfrentamiento
+                            // Resalta el nombre del equipo actual en la lista de partidos.
                             $local_display = ($local == $nombre_equipo) ? "<strong>" . $local . "</strong>" : $local;
                             $visitante_display = ($visitante == $nombre_equipo) ? "<strong>" . $visitante . "</strong>" : $visitante;
 
-                            // Imprimir el HTML del <li> usando echo
+                            // Imprime la estructura HTML para cada partido.
                             echo '<li class="list-group-item p-3">';
                             echo '  <div class="d-flex justify-content-between align-items-center">';
                             echo '      <div>';
@@ -122,7 +138,7 @@ $partidos = $partidoDAO->selectById($id_equipo);
 </div>
 
 <?php
-
+// Incluye el footer.
 require_once $dir . "/../templates/footer.php";
 
 ?>
