@@ -198,8 +198,9 @@ $equipos = $equipoDAO->selectAll();
 
                         <div class="col-md-4">
                             <div class="form-floating">
-                                <input type="number" name="jornada" id="jornada" class="form-control" min="1" required
-                                    placeholder="1"
+                                <input type="number" name="jornada" id="jornada" class="form-control" min="1" max="<?php echo count($jornadas) + 1 ?? 1; ?>"
+                                    required placeholder="1 required
+                                    placeholder=" 1"
                                     value="<?php echo htmlspecialchars($jornada_seleccionada ?? 1); ?>">
                                 <label for="jornada"><i class="bi bi-list-ol me-1"></i> Jornada</label>
                             </div>
