@@ -120,3 +120,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nombre'])) {
         </div>
 
     </div>
+</div>
+
+<?php
+    require_once $dir . "/../templates/footer.php";
+?>

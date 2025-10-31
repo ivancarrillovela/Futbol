@@ -18,7 +18,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 
     <nav class="navbar navbar-expand-md navbar-dark bg-success bg-gradient shadow-sm">
         <div class="container">

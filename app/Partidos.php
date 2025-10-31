@@ -238,3 +238,7 @@ $equipos = $equipoDAO->selectAll();
 
     </div>
 </div>
+
+<?php
+    require_once $dir . "/../templates/footer.php";
+?>
